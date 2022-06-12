@@ -18,7 +18,6 @@ void display_board (Data *all_set)
 	BOTTOM;
 
 
-
 }
 void init_board (Data *all_set)
 {
@@ -31,11 +30,11 @@ void init_board (Data *all_set)
         {
                 for (position.y = 1; position.y <= 5; position.y++)
                 {
+                        all_set->board[position.y][position.x] = ' ';
                         if (position.x % 2 == position.y % 2)
                         {       
                                 all_set->S.coordinate[all_set->S.count].x = position.x;
                                 all_set->S.coordinate[all_set->S.count].y = position.y;
-                                all_set->board[position.y][position.x] = ' ';
                                 all_set->S.count++;
                                 
                                 if (position.x <= 2)
