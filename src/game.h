@@ -8,15 +8,18 @@
 
 #define TRUE 1
 #define FALSE 0
+#define ALPHA 3
+#define BETA 4
+
 
 #define ROW 5
 #define COL 7
-#define NO_PIECE ' '
+#define FREE ' '
 #define BETA_PIECE 'o'
 #define ALPHA_PIECE 'x'
 
 #define MAX_PAIR 18
-
+typedef char Board[ROW + 1][COL + 1];
 typedef struct {
         int x;
         int y;
@@ -27,14 +30,18 @@ typedef struct {
         Coordinate coordinate[MAX_PAIR];
 } Set;
 
-typedef struct {
-        Set Y, E, S;
-        char board[ROW + 1][COL + 1];
-} Data;
-typedef struct {
-        Data alpha, beta, free;
-        
-} Board;
 
+// typedef struct {
+//         Set Y, E, S;
+//         char board[ROW + 1][COL + 1];
+// } Data;
+
+typedef struct {
+        Set alpha, beta, free, valid;
+        Board board;
+        int over, ok, aTurn;
+} Game;
+
+int IsValid (Coordinate *prev, Coordinate *next, Game *game);
 
 #endif
