@@ -3,12 +3,26 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#define LABEL_TOP printf("     1   2   3   4   5\n");
+#define LABEL_TOP printf("\n     1   2   3   4   5\n");
 #define TOP printf ("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 201, 205, 205, 205, 203, 205, 205, 205, 203, 205, 205, 205, 203, 205, 205, 205, 203, 205, 205, 205, 187);
 #define TILE(label, p) printf (" %d %c %c %c %c %c %c %c %c %c %c %c\n", label, 186, p[1], 186, p[2], 186, p[3], 186, p[4], 186, p[5], 186);
 #define PARTITION printf ("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 204, 205, 205, 205, 206, 205, 205, 205, 206, 205, 205, 205, 206, 205, 205, 205, 206, 205, 205, 205, 185);
 #define BOTTOM printf ("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 200, 205, 205, 205, 202, 205, 205, 205, 202, 205, 205, 205, 202, 205, 205, 205, 202, 205, 205, 205, 188);
 
+#define VALID (Set set) for (int i = 0; i < set.count; i++) printf ("\t[%d] (%d, %d)\n", i + 1, set.coordinate[i].x, set.coordinate[i].y); 
+#define ALPHA_TURN CYAN \
+                  printf ("\tAlpha's turn\n");\
+                  RESET;\
 
+#define BETA_TURN PURPLE \
+                  printf ("[Beta's turn]\n");\
+                  RESET;\
+                  printf (" Please select a piece to move: \n");\
+
+#define RED printf("\033[1;31m");
+#define PURPLE printf("\033[0;34m");
+#define GREEN printf("\033[0;32m");
+#define CYAN printf("\033[0;36m");
+#define RESET printf("\033[0m");
 
 #endif

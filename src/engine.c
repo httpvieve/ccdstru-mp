@@ -10,35 +10,15 @@ int Contains (Coordinate *tile, Set current)
         return FALSE;
 }
 
-int IsValid (int aTurn, Coordinate *prev, Coordinate *next, Game *game) // returns val for ok
-{
-        if (aTurn == TRUE) //alpha's turn 
-        {
-                if (Contains (prev, game->alpha) == TRUE && prev->x == next->x + 1 && 
-                                                           (next->y == prev->y || 
-                                                            next->y == prev->y + 1 || 
-                                                            prev->y == next->y + 1)) 
-                                                            
-                return FALSE;
-        }
-        else 
-        {
-                if (Contains (prev, game->beta) == TRUE && next->x == prev->x + 1 && 
-                                                           (next->y == prev->y || 
-                                                            next->y == prev->y + 1 || 
-                                                            prev->y == next->y + 1)) 
-                return FALSE;
-        }
-
-}
 Coordinate Front (int aTurn, Coordinate prev)
 {
         Coordinate next;
         next.y = prev.y;
-        if (aTurn == TRUE) next.x = prev.x + 1;
-        else next.x = prev.x - 1;
+        if (aTurn == TRUE) next.x = prev.x - 1;
+        else next.x = prev.x + 1;
         return next;
 }
+
 Coordinate Left (int aTurn, Coordinate prev)
 {
         Coordinate next;
@@ -67,30 +47,6 @@ Coordinate Right (int aTurn, Coordinate prev)
         return next;
 }
 
-void ModifyValidMoves (int aTurn, Coordinate *prev, Game *game)
-{
-        Coordinate temp;
-        game->valid.count = 0;
-        for (temp.x = 1; temp.x <= ROW; temp.x++)
-        {
-                for (temp.y = 1; temp.y <= COL; temp.y++)
-                {
-
-                        if ( IsValid (aTurn, prev, &temp, game) == FALSE && ((Contains (&temp, game->free) == TRUE) ||
-                                ((aTurn == TRUE && Contains (&temp, game->beta) == TRUE && Contains (&temp, game->S))||
-                                 (aTurn == FALSE && Contains (&temp, game->alpha) == TRUE && Contains (&temp, game->S)))))
-                                 {
-                                game->valid.coordinate[game->valid.count].x = temp.x;
-                                game->valid.coordinate[game->valid.count].y = temp.y;
-                                game->valid.count++;
-
-                                 }
-                        }
-                }
-
- }
-
-
 void printValid (Game *game)
 {
         for (int i = 0; i < game->valid.count; i++)
@@ -98,20 +54,33 @@ void printValid (Game *game)
         
 }
 
-void displayBoard (Game *all_set)
+void displayBoard (Game *game)
 {
-        int i;
-
+        int i, j;
+        //system("cls");
 	LABEL_TOP;
 	TOP;
-        for (i = 1; i <= ROW ; i++)
-        {
-                TILE(i, all_set->board[i]);
-                if (i < ROW) {
-                        PARTITION;
-                } else BOTTOM;
-        }
+        if (game->aTurn == TRUE)
+                        {
+                                for (i = 1; i <= ROW ; i++)
+                                {
+
+                                TILE(i, game->board[i]);
+                                if (i < ROW) 
+                                PARTITION;
+                                }
+                        } else {
+                                for (j = ROW; j >= 1; j--)
+                                {
+
+                                TILE(j, game->board[j]);
+                                if (j > 1) 
+                                PARTITION;
+                                }
+                        }
+        BOTTOM;
 }
+
 void initializeBoard (Game *game)
 {
         Coordinate position;
@@ -200,8 +169,8 @@ void ModifyBoard (Game *game)
         Coordinate temp;
         for (i = 1; i <= 7; i++){
                 for (j = 1; j <= 5; j++){
-                        temp.x = i;
-                        temp.y = j;
+                temp.x = i;
+                temp.y = j;
                         if (Contains (&temp, game->beta) == TRUE)
                                 game->board[temp.x][temp.y] = BETA_PIECE;
                         else if (Contains (&temp, game->alpha) == TRUE)
@@ -211,7 +180,35 @@ void ModifyBoard (Game *game)
         }
 }
 
-
+Set ModifyValid (Game *game, int aTurn, Coordinate prev)
+{
+	Set temp, all;
+	int i;
+		temp.count = 0;
+		all.coordinate[0] = Left (game->aTurn, prev);
+		all.coordinate[1] = Front (game->aTurn, prev);
+		all.coordinate[2] = Right (game->aTurn, prev);
+	
+	for (i = 0; i < 3; i++)
+	{
+		if (Contains (&all.coordinate[i], game->free) == TRUE)
+			temp.coordinate[temp.count++] = all.coordinate[i]; 
+		switch (aTurn)
+		{
+			case TRUE:
+				if (Contains (&all.coordinate[i], game->beta) == TRUE && Contains (&all.coordinate[i], game->S))
+					temp.coordinate[temp.count++] = all.coordinate[i]; 
+			break;
+			case FALSE:
+				if (Contains (&all.coordinate[i], game->alpha) == TRUE && Contains (&all.coordinate[i], game->S))
+					temp.coordinate[temp.count++] = all.coordinate[i]; 
+			break;
+		}
+	}
+        //for (i = 0; i < temp.count; i++)  printf ("\t[%d] (%d, %d)\n", i + 1, temp.coordinate[i].x, temp.coordinate[i].y);
+    
+	return temp;
+}
 
 
 // void DisplayValidMoves (Coordinate *current)
@@ -227,26 +224,3 @@ void ModifyBoard (Game *game)
 //                 }
 //         }
 // }
-void NextPlayerMove (Coordinate prev, Coordinate next, Game *game)
-{
-        // game->ok == isValid (prev, next, game);
-        // if (game->ok == TRUE)
-        // {
-        //         Remove (prev, &game->alpha, &game->free, game->board);
-        //         Add (next, &game->alpha);
-        //         ModifyBoard (game);
-        //         game->aTurn = FALSE;
-        // }
-        // else
-        // {
-        //         printf ("Invalid move\n");
-        // }
-        
-}
-int GameOver (Game *game) //return game state
-{
-        if (game->alpha.count == 0 || game->beta.count == 0) {
-                if (game->alpha.count > 0 && game->beta.count == 0) return ALPHA;
-                else return BETA;
-        } else return FALSE;
-}

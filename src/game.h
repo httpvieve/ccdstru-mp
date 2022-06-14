@@ -18,8 +18,8 @@
 #define BETA_PIECE 'o'
 #define ALPHA_PIECE 'x'
 
-#define MAX_PAIR 18
-typedef char Board[ + 1][COL + 1];
+#define MAX_PAIR ROW * COL
+typedef char Board[ROW + 1][COL + 1];
 typedef struct {
         int x;
         int y;
@@ -29,12 +29,6 @@ typedef struct {
         int count;
         Coordinate coordinate[MAX_PAIR];
 } Set;
-
-
-// typedef struct {
-//         Set Y, E, S;
-//         char board[ROW + 1][COL + 1];
-// } Data;
 
 typedef struct {
         Set alpha, beta, free, valid, S; 
