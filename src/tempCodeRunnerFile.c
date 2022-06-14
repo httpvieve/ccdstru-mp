@@ -1,1 +1,2 @@
-;
+ModifyBoard (&main);
+        // displayBoard (&main);

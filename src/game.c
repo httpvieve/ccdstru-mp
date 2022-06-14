@@ -10,43 +10,24 @@ int main ()
         Coordinate prev, next;
 
         initializeBoard (game);
-        ModifyBoard (game);
-        displayBoard (game);
+        // ModifyBoard (&main);
+        // displayBoard (&main);
 
-        prev.x = 2;
-        prev.y = 4;
-
-        next.x = 2;
-        next.y = 3;
-
-        for ( int i = 0; i < game->S.count; i++)
-                 printf ("s %d is (%d, %d)\n", i + 1, game->S.coordinate[i].x, game->S.coordinate[i].y);
-        for ( int i = 0; i < game->alpha.count; i++)
-                 printf ("Alpha %d is (%d, %d)\n", i + 1, game->alpha.coordinate[i].x, game->alpha.coordinate[i].y);
-        
-        Move (prev, &game->beta, &game->free);
-        Move (next, &game->free, &game->beta);
-
-        ModifyBoard (game);
-        displayBoard (game);
-        //Remove (prev, &game->beta, &game->free, game->board);
-        //Add (next, &game->beta);
         prev.x = 6;
         prev.y = 2;
 
-        next.x = 3;
-        next.y = 4;
+        next.x = 5;
+        next.y = 3;
         Move (prev, &game->alpha, &game->free);
         Move (next, &game->free, &game->alpha);
+        ModifyBoard (game);
+        displayBoard (&main);
+
         //Remove (prev, &game->alpha, &game->free, game->board);
         //Add (next, &game->alpha);
         
-        ModifyBoard (game);
-        displayBoard (game);
-        
-
-        ModifyValidMoves (game->aTurn, &next, game);
-        printValid (game);
+        // ModifyValidMoves (game->aTurn, &next, game);
+        // printValid (game);
 
         // ModifyValidMoves (game->aTurn, &next, game);
         // printValid (game);

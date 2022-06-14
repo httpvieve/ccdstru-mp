@@ -65,17 +65,16 @@ void printValid (Game *game)
 
 void displayBoard (Game *all_set)
 {
+        int i;
+
 	LABEL_TOP;
 	TOP;
-	TILE(1, all_set->board[1]);
-	PARTITION;
-	TILE(2, all_set->board[2]);
-	PARTITION;
-	TILE(3, all_set->board[3]);
-	PARTITION;
-	TILE(4, all_set->board[4]);
-	PARTITION;
-	TILE(5, all_set->board[5]);
+        for (i = 1; i <= ROW ; i++)
+        {
+                TILE(i, all_set->board[i]);
+	        if (i < ROW)
+                        PARTITION;
+        }
 	BOTTOM;
 }
 void initializeBoard (Game *game)
@@ -84,11 +83,12 @@ void initializeBoard (Game *game)
         game->alpha.count = 0;
         game->beta.count = 0;
         game->free.count = 0;
+        game->S.count = 0;
         for (position.x = 1; position.x <= 7; position.x++)
         {
                 for (position.y = 1; position.y <= 5; position.y++)
                 {
-                        game->board[position.y][position.x] = FREE;
+                        game->board[position.x][position.y] = FREE;
                         if (position.x % 2 == position.y % 2)
                         {       
                                 game->S.coordinate[game->S.count].x = position.x;
@@ -98,26 +98,26 @@ void initializeBoard (Game *game)
                                 {
                                         game->beta.coordinate[game->beta.count].x = position.x;
                                         game->beta.coordinate[game->beta.count].y = position.y;
-                                        game->board[game->beta.coordinate[game->beta.count].y][game->beta.coordinate[game->beta.count].x] = BETA_PIECE;
+                                        game->board[game->beta.coordinate[game->beta.count].x][game->beta.coordinate[game->beta.count].y] = BETA_PIECE;
                                         game->beta.count++;
                                 }
                                 else if (position.x >= 6)
                                 {       
                                         game->alpha.coordinate[game->alpha.count].x = position.x;
                                         game->alpha.coordinate[game->alpha.count].y = position.y;
-                                        game->board[game->alpha.coordinate[game->alpha.count].y][game->alpha.coordinate[game->alpha.count].x] = ALPHA_PIECE;
+                                        game->board[game->alpha.coordinate[game->alpha.count].x][game->alpha.coordinate[game->alpha.count].y] = ALPHA_PIECE;
                                         game->alpha.count++;
                                 }
                                 else {
                                         game->free.coordinate[game->free.count].x = position.x;
                                         game->free.coordinate[game->free.count].y = position.y;
-                                        game->board[game->free.coordinate[game->free.count].y][game->free.coordinate[game->free.count].x] = FREE;
+                                        game->board[game->free.coordinate[game->free.count].x][game->free.coordinate[game->free.count].y] = FREE;
                                         game->free.count++;
                                 }
                         } else {
                                 game->free.coordinate[game->free.count].x = position.x;
                                         game->free.coordinate[game->free.count].y = position.y;
-                                        game->board[game->free.coordinate[game->free.count].y][game->free.coordinate[game->free.count].x] = FREE;
+                                        game->board[game->free.coordinate[game->free.count].x][game->free.coordinate[game->free.count].y] = FREE;
                                         game->free.count++;
                         }
                 }
@@ -126,15 +126,16 @@ void initializeBoard (Game *game)
 
 
 
-void Add (Coordinate tile, Set *current)
+Set *Add (Coordinate tile, Set *current)
 {
         //board[tile.x][tile.y] = piece;
         current->coordinate[current->count].x = tile.x;
         current->coordinate[current->count].y = tile.y;
         current->count++;
+        return current;
 }
 
-void Remove (Coordinate tile, Set *current)
+Set *Remove (Coordinate tile, Set *current)
 {
         int i, key;
 
@@ -152,6 +153,7 @@ void Remove (Coordinate tile, Set *current)
         current->coordinate[key].x = '\0';
         current->coordinate[key].y = '\0';
         current->count--;
+        return current;
 }
 
 // void Move (Coordinate tile, Set *current, Game *game)
@@ -174,8 +176,8 @@ void Remove (Coordinate tile, Set *current)
 
 void Move (Coordinate tile, Set *current, Set *destination)
 {
-        Remove (tile, current);
-        Add (tile, destination);
+        current = Remove (tile, current);
+        destination = Add (tile, destination);
 }
 
 void ModifyBoard (Game *game)
@@ -187,10 +189,10 @@ void ModifyBoard (Game *game)
                         temp.x = i;
                         temp.y = j;
                         if (Contains (&temp, game->beta) == TRUE)
-                                game->board[temp.y][temp.x] = BETA_PIECE;
+                                game->board[temp.x][temp.y] = BETA_PIECE;
                         else if (Contains (&temp, game->alpha) == TRUE)
-                                game->board[temp.y][temp.x] = ALPHA_PIECE;
-                        else game->board[temp.y][temp.x] = FREE;
+                                game->board[temp.x][temp.y] = ALPHA_PIECE;
+                        else game->board[temp.x][temp.y] = FREE;
                 }
         }
 }
