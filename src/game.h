@@ -37,11 +37,11 @@ typedef struct {
 // } Data;
 
 typedef struct {
-        Set alpha, beta, free, valid;
+        Set alpha, beta, free, valid, S; 
         Board board;
         int over, ok, aTurn;
 } Game;
 
-int IsValid (Coordinate *prev, Coordinate *next, Game *game);
+int IsValid (int aTurn, Coordinate *prev, Coordinate *next, Game *game);
 
 #endif

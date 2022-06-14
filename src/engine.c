@@ -1,6 +1,68 @@
 #include "game.h"
 #include "display.h"
 
+int Contains (Coordinate *tile, Set current)
+{
+        int i;
+        for (i = 0; i < current.count; i++)
+                if (tile->x == current.coordinate[i].x && tile->y == current.coordinate[i].y)
+                        return TRUE;
+        return FALSE;
+}
+
+int IsValid (int aTurn, Coordinate *prev, Coordinate *next, Game *game) // returns val for ok
+{
+        if (aTurn == TRUE) //alpha's turn 
+        {
+                if (Contains (prev, game->alpha) == TRUE && prev->x == next->x + 1 && 
+                                                           (next->y == prev->y || 
+                                                            next->y == prev->y + 1 || 
+                                                            prev->y == next->y + 1)) 
+                                                            
+                return FALSE;
+        }
+        else 
+        {
+                if (Contains (prev, game->beta) == TRUE && next->x == prev->x + 1 && 
+                                                           (next->y == prev->y || 
+                                                            next->y == prev->y + 1 || 
+                                                            prev->y == next->y + 1)) 
+                return FALSE;
+        }
+
+}
+
+void ModifyValidMoves (int aTurn, Coordinate *prev, Game *game)
+{
+        Coordinate temp;
+        game->valid.count = 0;
+        for (temp.x = 1; temp.x <= ROW; temp.x++)
+        {
+                for (temp.y = 1; temp.y <= COL; temp.y++)
+                {
+
+                        if ( IsValid (aTurn, prev, &temp, game) == FALSE && ((Contains (&temp, game->free) == TRUE) ||
+                                ((aTurn == TRUE && Contains (&temp, game->beta) == TRUE && Contains (&temp, game->S))||
+                                 (aTurn == FALSE && Contains (&temp, game->alpha) == TRUE && Contains (&temp, game->S)))))
+                                 {
+                                game->valid.coordinate[game->valid.count].x = temp.x;
+                                game->valid.coordinate[game->valid.count].y = temp.y;
+                                game->valid.count++;
+
+                                 }
+                        }
+                }
+
+ }
+
+
+void printValid (Game *game)
+{
+        for (int i = 0; i < game->valid.count; i++)
+                 printf ("[%d] (%d, %d)\n", i + 1, game->valid.coordinate[i].x, game->valid.coordinate[i].y);
+        
+}
+
 void displayBoard (Game *all_set)
 {
 	LABEL_TOP;
@@ -29,6 +91,9 @@ void initializeBoard (Game *game)
                         game->board[position.y][position.x] = FREE;
                         if (position.x % 2 == position.y % 2)
                         {       
+                                game->S.coordinate[game->S.count].x = position.x;
+                                game->S.coordinate[game->S.count].y = position.y;
+                                game->S.count++;
                                 if (position.x <= 2)
                                 {
                                         game->beta.coordinate[game->beta.count].x = position.x;
@@ -49,10 +114,17 @@ void initializeBoard (Game *game)
                                         game->board[game->free.coordinate[game->free.count].y][game->free.coordinate[game->free.count].x] = FREE;
                                         game->free.count++;
                                 }
+                        } else {
+                                game->free.coordinate[game->free.count].x = position.x;
+                                        game->free.coordinate[game->free.count].y = position.y;
+                                        game->board[game->free.coordinate[game->free.count].y][game->free.coordinate[game->free.count].x] = FREE;
+                                        game->free.count++;
                         }
                 }
         }
 }
+
+
 
 void Add (Coordinate tile, Set *current)
 {
@@ -62,18 +134,16 @@ void Add (Coordinate tile, Set *current)
         current->count++;
 }
 
-void Remove (Coordinate tile, Set *current, Set *free, Board board)
+void Remove (Coordinate tile, Set *current)
 {
         int i, key;
+
         for (i = 0; i < current->count; i++)
         {
                  if (tile.x == current->coordinate[i].x && tile.y == current->coordinate[i].y)
                         key = i;
         }
-        Add (tile, free);
-        board[current->coordinate[key].y][current->coordinate[key].x] = FREE;
-        current->count--;
-        while (key <= current->count)
+        while (key < current->count)
         {
                 current->coordinate[key].x = current->coordinate[key + 1].x;
                 current->coordinate[key].y = current->coordinate[key + 1].y;
@@ -81,15 +151,33 @@ void Remove (Coordinate tile, Set *current, Set *free, Board board)
         }
         current->coordinate[key].x = '\0';
         current->coordinate[key].y = '\0';
+        current->count--;
 }
-int Contains (Coordinate *tile, Set current)
+
+// void Move (Coordinate tile, Set *current, Game *game)
+// {
+//         int i, key;
+//         Add (tile, current); 
+//         for (i = 0; i < game->free.count; i++)
+//                  if (tile.x == game->free.coordinate[i].x && tile.y == game->free.coordinate[i].y)
+//                         key = i;
+//         while (key < game->free.count)
+//         {
+//                 game->free.coordinate[key].x = game->free.coordinate[key + 1].x;
+//                 game->free.coordinate[key].y = game->free.coordinate[key + 1].y;
+//                 key++;
+//         }
+//         game->free.coordinate[key].x = '\0';
+//         game->free.coordinate[key].y = '\0';
+//         game->free.count--;
+// }
+
+void Move (Coordinate tile, Set *current, Set *destination)
 {
-        int i;
-        for (i = 0; i < current.count; i++)
-                if (tile->x == current.coordinate[i].x && tile->y == current.coordinate[i].y)
-                        return TRUE;
-        return FALSE;
+        Remove (tile, current);
+        Add (tile, destination);
 }
+
 void ModifyBoard (Game *game)
 {
         int i, j;
@@ -108,54 +196,35 @@ void ModifyBoard (Game *game)
 }
 
 
-int IsValid (Coordinate *prev, Coordinate *next, Game *game) // returns val for ok
-{
-        if (game->aTurn ==TRUE)
-        {
-                if (Contains (prev, game->alpha) == TRUE && prev->x == next->x + 1 && 
-                                                           (next->y == prev->y || 
-                                                            next->y == prev->y + 1 || 
-                                                            prev->y == next->y + 1)) 
-                return FALSE;
-        }
-        else 
-        {
-                if (Contains (prev, game->beta) == TRUE && next->x == prev->x + 1 && 
-                                                           (next->y == prev->y || 
-                                                            next->y == prev->y + 1 || 
-                                                            prev->y == next->y + 1)) 
-                return FALSE;
-        }
 
-}
 
-void DisplayValidMoves (Coordinate *current)
-{
-        Coordinate temp, key;
+// void DisplayValidMoves (Coordinate *current)
+// {
+//         Coordinate temp, key;
 
-        for (temp.x = 1; temp.x <= ROW; temp.x)
-        {
-                for (temp.y = 1; temp.y <= ROW; temp.y)
-                {
+//         for (temp.x = 1; temp.x <= ROW; temp.x)
+//         {
+//                 for (temp.y = 1; temp.y <= ROW; temp.y)
+//                 {
 
-                        if (isValid (current, temp,  ))
-                }
-        }
-}
+//                         if (isValid (current, temp,  ))
+//                 }
+//         }
+// }
 void NextPlayerMove (Coordinate prev, Coordinate next, Game *game)
 {
-        game->ok == isValid (prev, next, game);
-        if (game->ok == TRUE)
-        {
-                Remove (prev, &game->alpha, &game->free, game->board);
-                Add (next, &game->alpha);
-                ModifyBoard (game);
-                game->aTurn = FALSE;
-        }
-        else
-        {
-                printf ("Invalid move\n");
-        }
+        // game->ok == isValid (prev, next, game);
+        // if (game->ok == TRUE)
+        // {
+        //         Remove (prev, &game->alpha, &game->free, game->board);
+        //         Add (next, &game->alpha);
+        //         ModifyBoard (game);
+        //         game->aTurn = FALSE;
+        // }
+        // else
+        // {
+        //         printf ("Invalid move\n");
+        // }
         
 }
 int GameOver (Game *game) //return game state
