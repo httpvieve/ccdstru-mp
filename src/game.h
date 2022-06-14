@@ -38,6 +38,7 @@ typedef struct {
 
 typedef struct {
         Set alpha, beta, free, valid, S; 
+        Coordinate prev, next;
         Board board;
         int over, ok, aTurn;
 } Game;

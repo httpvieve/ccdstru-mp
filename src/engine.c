@@ -31,6 +31,41 @@ int IsValid (int aTurn, Coordinate *prev, Coordinate *next, Game *game) // retur
         }
 
 }
+Coordinate Front (int aTurn, Coordinate prev)
+{
+        Coordinate next;
+        next.y = prev.y;
+        if (aTurn == TRUE) next.x = prev.x + 1;
+        else next.x = prev.x - 1;
+        return next;
+}
+Coordinate Left (int aTurn, Coordinate prev)
+{
+        Coordinate next;
+        if (aTurn == TRUE)
+        {
+                next.x = prev.x - 1;
+                next.y = prev.y - 1;
+        } else {
+                next.x = prev.x + 1;
+                next.y = prev.y + 1;
+        }
+        return next;
+}
+
+Coordinate Right (int aTurn, Coordinate prev)
+{
+        Coordinate next;
+        if (aTurn == TRUE)
+        {
+                next.x = prev.x - 1;
+                next.y = prev.y + 1;
+        } else {
+                next.x = prev.x + 1;
+                next.y = prev.y - 1;
+        }
+        return next;
+}
 
 void ModifyValidMoves (int aTurn, Coordinate *prev, Game *game)
 {
@@ -72,10 +107,10 @@ void displayBoard (Game *all_set)
         for (i = 1; i <= ROW ; i++)
         {
                 TILE(i, all_set->board[i]);
-	        if (i < ROW)
+                if (i < ROW) {
                         PARTITION;
+                } else BOTTOM;
         }
-	BOTTOM;
 }
 void initializeBoard (Game *game)
 {
@@ -126,16 +161,14 @@ void initializeBoard (Game *game)
 
 
 
-Set *Add (Coordinate tile, Set *current)
+void Add (Coordinate tile, Set *current)
 {
-        //board[tile.x][tile.y] = piece;
         current->coordinate[current->count].x = tile.x;
         current->coordinate[current->count].y = tile.y;
         current->count++;
-        return current;
 }
 
-Set *Remove (Coordinate tile, Set *current)
+void Remove (Coordinate tile, Set *current)
 {
         int i, key;
 
@@ -153,31 +186,12 @@ Set *Remove (Coordinate tile, Set *current)
         current->coordinate[key].x = '\0';
         current->coordinate[key].y = '\0';
         current->count--;
-        return current;
 }
-
-// void Move (Coordinate tile, Set *current, Game *game)
-// {
-//         int i, key;
-//         Add (tile, current); 
-//         for (i = 0; i < game->free.count; i++)
-//                  if (tile.x == game->free.coordinate[i].x && tile.y == game->free.coordinate[i].y)
-//                         key = i;
-//         while (key < game->free.count)
-//         {
-//                 game->free.coordinate[key].x = game->free.coordinate[key + 1].x;
-//                 game->free.coordinate[key].y = game->free.coordinate[key + 1].y;
-//                 key++;
-//         }
-//         game->free.coordinate[key].x = '\0';
-//         game->free.coordinate[key].y = '\0';
-//         game->free.count--;
-// }
 
 void Move (Coordinate tile, Set *current, Set *destination)
 {
-        current = Remove (tile, current);
-        destination = Add (tile, destination);
+        Remove (tile, current);
+        Add (tile, destination);
 }
 
 void ModifyBoard (Game *game)
