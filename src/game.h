@@ -11,6 +11,8 @@
 #define ALPHA 3
 #define BETA 4
 
+#define ALPHA_WINS 3
+#define BETA_WINS 4
 
 #define ROW 7
 #define COL 5
@@ -38,5 +40,6 @@ typedef struct {
 } Game;
 
 int IsValid (int aTurn, Coordinate *prev, Coordinate *next, Game *game);
-
+Coordinate GetMove (Set avail);
+Set AvailableMoves (Set current, Game *game);
 #endif

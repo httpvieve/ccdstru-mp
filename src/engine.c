@@ -57,9 +57,9 @@ void printValid (Game *game)
 void displayBoard (Game *game)
 {
         int i, j;
-        //system("cls");
 	LABEL_TOP;
 	TOP;
+        system("cls");
         if (game->aTurn == TRUE)
                         {
                                 for (i = 1; i <= ROW ; i++)
@@ -69,7 +69,7 @@ void displayBoard (Game *game)
                                 if (i < ROW) 
                                 PARTITION;
                                 }
-                        } else {
+         } else {
                                 for (j = ROW; j >= 1; j--)
                                 {
 
@@ -126,6 +126,7 @@ void initializeBoard (Game *game)
                         }
                 }
         }
+       // game->ok = !game->ok;
 }
 
 
@@ -157,7 +158,7 @@ void Remove (Coordinate tile, Set *current)
         current->count--;
 }
 
-void Move (Coordinate tile, Set *current, Set *destination)
+void Move (Coordinate tile, Set *current, Set *destination) //add modification to board or just transfer stuff
 {
         Remove (tile, current);
         Add (tile, destination);
@@ -185,9 +186,9 @@ Set ModifyValid (Game *game, int aTurn, Coordinate prev)
 	Set temp, all;
 	int i;
 		temp.count = 0;
-		all.coordinate[0] = Left (game->aTurn, prev);
-		all.coordinate[1] = Front (game->aTurn, prev);
-		all.coordinate[2] = Right (game->aTurn, prev);
+		all.coordinate[0] = Left (aTurn, prev);
+		all.coordinate[1] = Front (aTurn, prev);
+		all.coordinate[2] = Right (aTurn, prev);
 	
 	for (i = 0; i < 3; i++)
 	{
@@ -210,17 +211,41 @@ Set ModifyValid (Game *game, int aTurn, Coordinate prev)
 	return temp;
 }
 
+void ElimProcess (Game *game, Coordinate prev, Coordinate next, int aTurn)
+{
+        switch (aTurn)
+	{
+	case TRUE:
+                if (Contains (&next, game->free) == TRUE)
+                        {
+                                
+                        Move (prev, &game->alpha, &game->free);
+                        Move (next, &game->free, &game->alpha);
+                 }
+		if (Contains (&next, game->beta) == TRUE && Contains (&prev, game->S))
+                        {
+                        Move (next, &game->beta, &game->free);
+                        Move (prev, &game->alpha, &game->free);
+                        Move (next, &game->free, &game->alpha);
+                        //eat remarks
+                } 
+	break;
+	case FALSE:
 
-// void DisplayValidMoves (Coordinate *current)
-// {
-//         Coordinate temp, key;
+                if (Contains (&next, game->free) == TRUE)
+                {
+                        Move (prev, &game->beta, &game->free);
+                        Move (next, &game->free, &game->beta);
+                }
+                if (Contains (&next, game->alpha) == TRUE && Contains (&prev, game->S))
+                        {
+                        Move (next, &game->alpha,&game->free);
+                        Move (prev, &game->beta, &game->free);
+                        Move (next, &game->free, &game->beta);
+                }
+	break;
+	}
+        ModifyBoard (game);
+        aTurn = !aTurn;
+}
 
-//         for (temp.x = 1; temp.x <= ROW; temp.x)
-//         {
-//                 for (temp.y = 1; temp.y <= ROW; temp.y)
-//                 {
-
-//                         if (isValid (current, temp,  ))
-//                 }
-//         }
-// }

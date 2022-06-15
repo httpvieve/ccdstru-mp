@@ -11,8 +11,9 @@
 
 #define VALID (Set set) for (int i = 0; i < set.count; i++) printf ("\t[%d] (%d, %d)\n", i + 1, set.coordinate[i].x, set.coordinate[i].y); 
 #define ALPHA_TURN CYAN \
-                  printf ("\tAlpha's turn\n");\
+                  printf ("[Alpha's turn]\n");\
                   RESET;\
+                   printf (" Please select a piece to move: \n");\
 
 #define BETA_TURN PURPLE \
                   printf ("[Beta's turn]\n");\
