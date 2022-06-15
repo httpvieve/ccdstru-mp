@@ -57,9 +57,9 @@ void printValid (Game *game)
 void displayBoard (Game *game)
 {
         int i, j;
+        system("cls");
 	LABEL_TOP;
 	TOP;
-        system("cls");
         if (game->aTurn == TRUE)
                         {
                                 for (i = 1; i <= ROW ; i++)

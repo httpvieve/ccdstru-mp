@@ -10,6 +10,14 @@
 #define BOTTOM printf ("   %c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c\n", 200, 205, 205, 205, 202, 205, 205, 205, 202, 205, 205, 205, 202, 205, 205, 205, 202, 205, 205, 205, 188);
 
 #define VALID (Set set) for (int i = 0; i < set.count; i++) printf ("\t[%d] (%d, %d)\n", i + 1, set.coordinate[i].x, set.coordinate[i].y); 
+
+#define DIVIDER RED; \
+                for (int i = 0; i < 42; i++) \
+                        if (i == 41) printf("\n");\
+                        else printf("=");\
+                        RESET;
+           
+
 #define ALPHA_TURN CYAN \
                   printf ("[Alpha's turn]\n");\
                   RESET;\
@@ -19,6 +27,18 @@
                   printf ("[Beta's turn]\n");\
                   RESET;\
                   printf (" Please select a piece to move: \n");\
+
+#define ALPHA_WIN CYAN \
+                  printf ("\tPlayer Alpha wins the game!\n");\
+                  RESET;\
+
+#define BETA_WIN PURPLE \
+                  printf ("\tPlayer Beta wins the game!\n");\
+                  RESET;\
+
+#define GAME_OVER  RED;\
+                   puts ("\t\tGAME OVER");\
+                   RESET;\
 
 #define RED printf("\033[1;31m");
 #define PURPLE printf("\033[0;34m");
