@@ -1,5 +1,5 @@
 /**
- * Description:       This is a terminal-based board game oriented for two players which can be similar to the game Checkers but a modified version.
+ * Description:       This is a terminal-based board game oriented for two players which is similar to the game Checkers but a modified version.
  * 
  * Programmed by:     Genevieve S. Balestramon
  *                    
