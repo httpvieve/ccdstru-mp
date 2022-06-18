@@ -126,9 +126,7 @@ Coordinate GetMove (Set avail)
 {
         Coordinate tile; // temporary holder which will be returned by GetMove()
         int i;
-
         for (i = 0; i < avail.count; i++) printf ("\t[%d] (%d, %d)\n", i + 1, avail.coordinate[i].x, avail.coordinate[i].y); //prints all the available coordinates modified by ModifyValid()
-        
 	printf ("Enter choice: ");
         scanf ("%d", &i); //asks user to prompt for input 
         
@@ -141,7 +139,6 @@ Coordinate GetMove (Set avail)
         } // loops until prompted choice contains a valid move 
         tile = avail.coordinate[i - 1]; // decrements since array indices usually starts at zero
         printf ("You have selected (%d, %d).\n", tile.x, tile.y); //displays selected move
-        
         return tile;
 }
 
@@ -163,7 +160,6 @@ Set ModifyValid (Game *game, int aTurn, Coordinate prev)
 	Set temp, all;
 	int i;
 	temp.count = 0;
-
 	all.coordinate[0] = Left (aTurn, prev);
 	all.coordinate[1] = Front (aTurn, prev);
 	all.coordinate[2] = Right (aTurn, prev);
@@ -195,14 +191,12 @@ int GameOver (Game *game) //return game state
 
         temp_alpha = AvailableMoves (game->alpha, game);
         temp_beta = AvailableMoves (game->beta, game);
-
-        for (i = 0; i < game->alpha.count; i++) if (Contains (&game->alpha.coordinate[i], game->E) == TRUE) in_setE++;
-        for (i = 0; i < game->beta.count; i++) if (Contains (&game->beta.coordinate[i], game->Y) == TRUE) in_setY++;
+        for (i = 0; i < game->alpha.count; i++) if (Contains (&game->alpha.coordinate[i], game->Y) == TRUE) in_setE++;
+        for (i = 0; i < game->beta.count; i++) if (Contains (&game->beta.coordinate[i], game->E) == TRUE) in_setY++;
 
         if (game->alpha.count - in_setE == 0) return ALPHA_WINS_ON_BASE;
         else if (game->beta.count - in_setY == 0) return BETA_WINS_ON_BASE;
-        else if ((temp_alpha.count == 0 && game->beta.count > in_setY ) 
-              || (temp_beta.count == 0  && game->alpha.count > in_setE )) return STALEMATE;
+        else if ((temp_alpha.count == 0 && game->beta.count > in_setY ) || (temp_beta.count == 0  && game->alpha.count > in_setE )) return STALEMATE;
         else if (game->alpha.count > 0 && game->beta.count == 0) return ALPHA_WINS_PAWNS_OUT;
         else if (game->beta.count > 0 && game->alpha.count == 0) return BETA_WINS_PAWNS_OUT;
         else return FALSE;
@@ -240,7 +234,6 @@ void NextPlayerMove (Coordinate prev, Game *game)
                 BETA_TURN;
                 game->valid = AvailableMoves (game->beta, game);
         }
-
         if (game->valid.count == 0)
                 game->ok = !game->ok;
         else {
@@ -307,7 +300,6 @@ void InitializeBoard (Game *game)
         game->S.count = 0;
         game->E.count = 0;
         game->Y.count = 0;
-        
         for (position.x = 1; position.x <= 7; position.x++)
         {
                 for (position.y = 1; position.y <= 5; position.y++)
@@ -318,13 +310,13 @@ void InitializeBoard (Game *game)
                                 game->S.coordinate[game->S.count++] = position;
                                 if (position.x <= 2)
                                 {
-                                        game->E.coordinate[game->E.count++] = position;
+                                        game->E.coordinate[game->Y.count++] = position;
                                         game->beta.coordinate[game->beta.count++] = position;
                                         game->board[position.x][position.y] = BETA_PIECE;
                                 }
                                 else if (position.x >= 6)
                                 {       
-                                        game->Y.coordinate[game->Y.count++] = position;
+                                        game->Y.coordinate[game->E.count++] = position;
                                         game->alpha.coordinate[game->alpha.count++] = position;
                                         game->board[position.x][position.y] = ALPHA_PIECE;
                                 }
@@ -388,11 +380,7 @@ void Add (Coordinate tile, Set *current)
 void Remove (Coordinate tile, Set *current)
 {
         int i, key;
-
-        for (i = 0; i < current->count; i++)
-        {
-                 if (tile.x == current->coordinate[i].x && tile.y == current->coordinate[i].y) key = i;
-        }
+        for (i = 0; i < current->count; i++) if (tile.x == current->coordinate[i].x && tile.y == current->coordinate[i].y) key = i;
         while (key < current->count)
         {
                 current->coordinate[key].x = current->coordinate[key + 1].x;
@@ -418,7 +406,7 @@ void EliminationProcess (Game *game, Coordinate prev, Coordinate next, int aTurn
         if (Contains (&next, game->free) == TRUE) 
         {           
                 Move (prev, &game->alpha, &game->free);
-                 Move (next, &game->free, &game->alpha);
+                Move (next, &game->free, &game->alpha);
         }
 	if (Contains (&next, game->beta) == TRUE && Contains (&prev, game->S)) 
         {
