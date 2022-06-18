@@ -127,13 +127,13 @@ void EliminationProcess (Game *game, Coordinate prev, Coordinate next, int aTurn
 Coordinate Left (int aTurn, Coordinate prev) 
 {
         Coordinate next;
-        if (aTurn == TRUE)
+        if (aTurn)
         {
                 next.x = prev.x - 1;
                 next.y = prev.y - 1;
         } else {
                 next.x = prev.x + 1;
-                next.y = prev.y + 1;
+                next.y = prev.y - 1;
         }
         return next;
 }
@@ -149,7 +149,7 @@ Coordinate Front (int aTurn, Coordinate prev)
         Coordinate next;
         next.y = prev.y; //y coordinate stays the same since piece only moves forward
         
-        if (aTurn == TRUE) next.x = prev.x - 1; 
+        if (aTurn) next.x = prev.x - 1; 
         else next.x = prev.x + 1; 
 	return next;
 }
@@ -163,13 +163,13 @@ Coordinate Front (int aTurn, Coordinate prev)
 Coordinate Right (int aTurn, Coordinate prev)
 {
         Coordinate next;
-        if (aTurn == TRUE)
+        if (aTurn)
         {
                 next.x = prev.x - 1;
                 next.y = prev.y + 1;
         } else {
                 next.x = prev.x + 1;
-                next.y = prev.y - 1;
+                next.y = prev.y + 1;
         }
         return next;
 }
@@ -377,7 +377,6 @@ void NextPlayerMove (Coordinate prev, Game *game)
                 printf ("%s \nSuccessfully moved to (%d, %d)! \n%s", RED, game->next.x, game->next.y, RESET);
                 printf ("Press any key to continue...");
                 getch();
-                
                 game->aTurn = !game->aTurn; // switches the turn
                 game->ok = !game->ok; // ends loop to continue for the next player
         }
